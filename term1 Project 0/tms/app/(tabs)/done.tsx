@@ -7,20 +7,18 @@ interface Task {
   isCompleted: boolean;
 }
 
-export default function Index() {
+export default function DonePage() {
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  const fetchIncompleteTasks = async () => {
+  const fetchCompleteTasks = async () => {
     try {
-      const response = await fetch(
-        "http://192.168.227.1:3000/tasks/incomplete"
-      );
+      const response = await fetch("http://192.168.227.1:3000/tasks/complete");
       const result = await response.json();
       if (result.success) {
         setTasks(result.data);
       }
     } catch (error) {
-      console.error("Error fetching tasks:", error);
+      console.error("Error fetching completed tasks:", error);
     }
   };
 
@@ -31,7 +29,7 @@ export default function Index() {
       });
       const result = await response.json();
       if (result.success) {
-        fetchIncompleteTasks(); // Refresh the list
+        fetchCompleteTasks(); // Refresh the list
       }
     } catch (error) {
       console.error("Error toggling task:", error);
@@ -39,7 +37,7 @@ export default function Index() {
   };
 
   useEffect(() => {
-    fetchIncompleteTasks();
+    fetchCompleteTasks();
   }, []);
 
   const renderTask = ({ item }: { item: Task }) => (
@@ -63,18 +61,14 @@ export default function Index() {
           marginRight: 12,
           justifyContent: "center",
           alignItems: "center",
+          backgroundColor: "#000",
         }}
       >
-        <View
-          style={{
-            width: 12,
-            height: 12,
-            borderRadius: 6,
-            backgroundColor: "#000",
-          }}
-        />
+        <Text style={{ color: "#fff", fontSize: 12 }}>✓</Text>
       </TouchableOpacity>
-      <Text style={{ fontSize: 16 }}>{item.title}</Text>
+      <Text style={{ fontSize: 16, textDecorationLine: "line-through" }}>
+        {item.title}
+      </Text>
     </View>
   );
 
@@ -88,7 +82,7 @@ export default function Index() {
           marginBottom: 20,
         }}
       >
-        Tasks
+        Completed Tasks
       </Text>
       <FlatList
         data={tasks}
