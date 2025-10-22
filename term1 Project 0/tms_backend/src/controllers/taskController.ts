@@ -1,6 +1,6 @@
 import Task from "../models/taskModel";
 
-export const createTask = async ({ body }: { body: any }) => {
+export const createTask = async (body: any) => {
   try {
     const newTask = new Task(body);
     await newTask.save();
@@ -33,22 +33,20 @@ export const findCompleteTasks = async () => {
 
 export const toggleCompleted = async (id: string) => {
   try {
-    const task = await Task.findByIdAndUpdate(
-      id,
-      {
-        $set: {
-          isCompleted: { $not: "$isCompleted" },
-        },
-      },
-      { new: true }
-    );
-
+    // First find the current task
+    const task = await Task.findById(id);
     if (!task) {
-      console.log("Task not found");
       return null;
     }
 
-    return task;
+    // Then update with toggled value
+    const updatedTask = await Task.findByIdAndUpdate(
+      id,
+      { isCompleted: !task.isCompleted },
+      { new: true }
+    );
+
+    return updatedTask;
   } catch (e) {
     console.error("Failed to toggle task");
     throw e;
