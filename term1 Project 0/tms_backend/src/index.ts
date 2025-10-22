@@ -2,6 +2,7 @@ import { Elysia } from "elysia";
 import mongoose from "mongoose";
 import taskRoutes from "./routes/taskRoutes";
 import openapi from "@elysiajs/openapi";
+import cors from "@elysiajs/cors";
 
 export const app = new Elysia();
 
@@ -16,6 +17,8 @@ mongoose.connection.on(
 taskRoutes(app);
 
 app.get("/", () => "Task API is running!");
+
+app.use(cors());
 
 app.use(openapi()).listen(3000);
 
