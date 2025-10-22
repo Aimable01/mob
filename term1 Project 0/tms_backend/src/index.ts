@@ -1,18 +1,22 @@
-import { openapi } from "@elysiajs/openapi";
 import { Elysia } from "elysia";
 import mongoose from "mongoose";
+import taskRoutes from "./routes/taskRoutes";
+import openapi from "@elysiajs/openapi";
 
-export const app = new Elysia().use(openapi()).listen(3000);
-app.get("/", () => "Hello Elysia");
+export const app = new Elysia();
 
-// db connection
-mongoose.connect("mongodb://localhost:27017");
-
+// DB connection
+mongoose.connect("mongodb://localhost:27017/taskdb");
 mongoose.connection.on(
   "error",
   console.error.bind(console, "MongoDB connection error")
 );
 
-console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
-);
+// Register routes
+taskRoutes(app);
+
+app.get("/", () => "Task API is running!");
+
+app.use(openapi()).listen(3000);
+
+console.log(`🦊 Elysia is running at http://localhost:3000`);
