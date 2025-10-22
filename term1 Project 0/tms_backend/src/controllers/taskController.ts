@@ -33,14 +33,22 @@ export const findCompleteTasks = async () => {
 
 export const toggleCompleted = async (id: string) => {
   try {
-    const taskToComplete = await Task.findById(id);
-    if (!taskToComplete) {
+    const task = await Task.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          isCompleted: { $not: "$isCompleted" },
+        },
+      },
+      { new: true }
+    );
+
+    if (!task) {
       console.log("Task not found");
       return null;
     }
-    taskToComplete.isCompleted = !taskToComplete.isCompleted;
-    await taskToComplete.save();
-    return taskToComplete;
+
+    return task;
   } catch (e) {
     console.error("Failed to toggle task");
     throw e;

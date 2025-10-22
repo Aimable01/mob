@@ -1,7 +1,7 @@
 import { openapi } from "@elysiajs/openapi";
 import { Elysia } from "elysia";
 
-const app = new Elysia().use(openapi()).listen(3000);
+export const app = new Elysia().use(openapi()).listen(3000);
 app.get("/", () => "Hello Elysia");
 
 console.log(
