@@ -1,4 +1,3 @@
-import { app } from "..";
 import {
   createTask,
   findCompleteTasks,
@@ -6,18 +5,74 @@ import {
   toggleCompleted,
 } from "../controllers/taskController";
 
-app.get("/complete", async () => {
-  return await findCompleteTasks;
-});
+export default (app: any) => {
+  app.post("/task", async ({ body }: { body: any }) => {
+    try {
+      const task = await createTask(body);
+      return {
+        success: true,
+        message: "Task created successfully",
+        data: task,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: "Failed to create task",
+      };
+    }
+  });
 
-app.get("/inccomplete", async () => {
-  return await findIncompleteTasks;
-});
+  app.get("/tasks/complete", async () => {
+    try {
+      const tasks = await findCompleteTasks();
+      return {
+        success: true,
+        data: tasks,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: "Failed to fetch completed tasks",
+      };
+    }
+  });
 
-app.post("/create", async ({ body }: { body: any }) => {
-  return await createTask(body);
-});
+  app.get("/tasks/incomplete", async () => {
+    try {
+      const tasks = await findIncompleteTasks();
+      return {
+        success: true,
+        data: tasks,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: "Failed to fetch incomplete tasks",
+      };
+    }
+  });
 
-app.patch("/task/:id", async ({ params: { id } }) => {
-  const updatedTask = await toggleCompleted(id);
-});
+  app.patch("/task/:id", async ({ params }: { params: { id: string } }) => {
+    try {
+      const updatedTask = await toggleCompleted(params.id);
+
+      if (!updatedTask) {
+        return {
+          success: false,
+          message: "Task not found",
+        };
+      }
+
+      return {
+        success: true,
+        message: "Task status updated successfully",
+        data: updatedTask,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: "Failed to update task",
+      };
+    }
+  });
+};
